@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Projet HTML : Jeu</title>
+<link rel="stylesheet" media="screen" href="stylesheets/style.css" type="text/css"/>
+<script type="text/javascript" src="javascripts/jquery.js"></script>
+
+</head>
+<body>
+<h1><u>Dodge and Shoot 3000!</u><h1><hr>
+<h2>Evite les boules qui tombent avec les flèches du clavier (Q et D en VS Mode) ! <br> Au bout de 50 boules évitées, tu peux faire exploser toutes les boules avec la flèche vers le haut (Désactivé en VS Mode) !</h2>
+<hr>
+<div id="scoreJ1"></div>    <div id="scoreJ2"></div>
+<input id="name" type="text" placeholder="Pseudo"/>
+<!--<div id="hardCss">
+<form id="listes" name="listes">
+Nombre de Joueurs :
+<select id="NBJ">
+	<option value="1">Un des meilleurs Joueurs (Solo)</option>
+	<option value="2">Deux des meilleurs Joueurs (Versus Mode)</option>
+</select>
+<br>Difficulté :
+<select id="hard">
+	<option value="0">Probabilités</option>
+	<option value="1">Ada</option>
+	<option value="2">Système électronique pour les communications</option>
+	<option value="3">Analyse numérique</option>
+	<option value="9">Laurence</option>
+</select>
+<form>
+</div>-->
+<div id="bombe">Nombre de bombes disponibles : 0</div>
+
+<audio id="son"  loop="loop">
+<source src="music/SpaceInvadersSoundtrack.mp3" type="audio/mp3"/>
+</audio>
+
+<!--<table id="scoreEasy">
+
+<caption> LEADERBOARD EASY</caption>
+
+   <tr>
+       <th>Pseudo</th>
+       <th>Record du mode Facile</th>
+   </tr>
+   <tr>
+       <td>Toon</td>
+       <td>27</td>
+   </tr>
+
+   <tr>
+       <td>Fleroux</td>
+       <td>8</td>
+   </tr>
+
+   <tr>
+       <td>Fronçois</td>
+       <td>10</td>
+   </tr>
+
+   <tr>
+       <td>Alexis</td>
+       <td>205</td>
+   </tr>
+
+   <tr>
+       <td>Daphne</td>
+       <td>20 sur 20</td>
+   </tr>
+   <tr>
+       <td>Liza</td>
+       <td>Bol de riz</td>
+   </tr>
+
+   <tr>
+       <td>Gregoire</td>
+       <td>IKY2</td>
+   </tr>
+
+   <tr>
+       <td>Laurence</td>
+       <td>0 sur 20</td>
+   </tr>
+
+   <tr>
+       <td>David</td>
+       <td>Euuuuuuuuh</td>
+   </tr>
+
+   <tr>
+       <td>Pierre</td>
+       <td>3d is too ez 4me</td>
+   </tr>
+</table>-->
+
+
+<canvas id="dessin" width="600" height="440">
+</canvas>
+<br><br>
+
+<hr>
+<p> Projet HTML5 mené dans le cadre du module d'ouverture <em>"Initiation à l'HTML5 et aux animations flash"</em> de l'INSA de Toulouse.<br>
+	  Projet mené par LEROUX Florentin et CICHOCKI Guilhem. ©<br>
+	  Remerciements : Frank Bessou, Frank Bessou encore, et encore Frank Bessou en fait, puis on obliera pas non plus Frank Bessou. Qu'il soit ici remercié pour son aide.
+	  <br>
+	  Année 2013-2014, Pré-orientation MIC.
+</p><hr>
+
+<!--DEBUT DU CODE JAVASCRIPT-->
+<script src="javascripts/socket.io.js"></script>
+<script src="javascripts/JsCaml.js"></script>
+<script src="javascripts/game.js" ></script>
+
+<!--<script>
+  var socket = io.connect('http://localhost:3001');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>-->
+</body>
+</html>

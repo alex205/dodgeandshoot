@@ -1,0 +1,108 @@
+/* Style pour colorer le fond de la page web en gris */
+body
+{
+	background-color : black;
+
+}
+
+/* Style utilisé pour afficher les commentaires de bas de page*/
+p
+{
+	color: white;
+	font-size : 14px;
+	font-family:monospace;
+	text-align : center;
+}
+
+/* Couleur et taille de la police du titre */
+h1
+{
+	color: white;
+	font-family:monospace;
+	font-size : 24px;
+	text-align:center;
+}
+
+/* Couleur et taille de la police des explication (h2) */
+h2
+{
+	color: white;
+	font-size : 18px;
+	font-family:monospace;
+	text-align : center;
+}
+
+
+/* definition du  style de l'affichage du score du joueur 1 */
+#scoreJ1
+{
+	color: red;
+	font-size : 18px;
+	font-family:monospace;
+}
+
+/* definition du  style de l'affichage du score du joueur 2 */
+#scoreJ2
+{
+	color: blue;
+	font-size : 18px;
+	font-family:monospace;
+}
+
+/* definition du  style de l'affichage de la difficulté */
+#hardCss
+{
+	color: white;
+	font-size : 18px;
+	font-family:monospace;
+}
+
+
+/* définition du style de 'laffichage du nombre de bombes */
+#bombe
+{
+	color: white;
+	font-size : 18px;
+	font-family:monospace;
+}
+
+#perdu
+{
+	position:absolute;
+
+}
+
+#scoreEasy
+{
+	border: 5px double white;
+   	border-collapse: collapse;
+	color: white;
+	font-size : 18px;
+	font-family:monospace;
+	position: absolute;
+	top : 240px;
+	right : 245px;
+}
+
+#dessin{
+	border : 1px solid white;
+}
+
+caption
+{
+	padding:10px 10px;
+}
+
+th
+{
+	border: 1px solid white;
+	text-align : center;
+	padding: 20px 20px;
+}
+
+td
+{
+    	border: 1px solid white;
+    	text-align : center;
+    	padding : 7px 7px;
+}
