@@ -1,5 +1,7 @@
 #!/bin/bash
 
+npm install
+
 cd public/javascripts
 if [ ! -f socket.io.js ]; then
   echo "Generating symbolic links"
