@@ -431,7 +431,7 @@ function Jeu(){
 
 		if(nbjoueurs==1){loose2=1};
 
-		if((i%8)==0){
+		if((i%2)==0){
 			Presence_Boule[Math.round(Math.random()*nb_boules)]=1;
 		}
 
@@ -932,6 +932,6 @@ $(function(){
 	}
 
 	var i =0;
-	var inter = setInterval(Animer, 100);
+	var inter = setInterval(Animer, 30);
 
  });
