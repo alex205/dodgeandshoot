@@ -38,27 +38,11 @@ let white = 16777215 in
    done
 
 
-
-
 (*Printf.printf "%s%!" (string_of_bool (is_column img 0 0 0))*)
 
 let rec is_column img i j px =
- if px >= 22 then true
+ if px >= 19 then true
    else img.(i).(j*20 + px) = 0 && is_column img i j (px+1)
-
-
-
-
-let rec reachable img pos j obj =
- if pos = obj then true
- else
-  if (obj-pos) <0 then
-     if j <= obj then true
-     else if img.(Array.length img - 60).(j) != 16777215  then reachable img pos (j-1) obj else false
-  else
-     if j >= obj then true
-     else if img.(Array.length img - 60).(j) != 16777215 || (j-pos)<21 then reachable img pos (j+1) obj else false
-
 
 (*Printf.printf "%d\n%!" (position_joueur img)*)
 let position_joueur img =
@@ -71,6 +55,19 @@ let position_joueur img =
     else -1
   in loop 0
 
+(**********************************************)
+
+let rec reachable img pos j obj =
+ if pos = obj then true
+ else
+  if (obj-pos) <0 then
+     if j <= obj then true
+     else if img.(Array.length img - 60).(j) != 16777215  then reachable img pos (j-1) obj else false
+  else
+     if j >= obj then true
+     else if img.(Array.length img - 60).(j) != 16777215 || (j-pos)<21 then reachable img pos (j+1) obj else false
+
+
 let choose_direction pos obj =
  let diff = obj-pos in
   if diff <0 then Left
@@ -78,17 +75,47 @@ let choose_direction pos obj =
     else Nothing
 
 
-
-
 let rec best_pos img i j found res=
  if not found  then
   if i < Array.length img then
-    if j < 20 then
+    if j < 20  then
       if is_column img i j 0 && (reachable img (position_joueur img) (position_joueur img) (j*20)) then best_pos img i (j+1) true (j*20)
       else best_pos img i (j+1) false (-1)
     else best_pos img (i+1) 0 true (j*20)
   else res
  else res
+
+(**********************************************)
+
+
+
+(****************************************)
+(****************************************)
+
+let rec coef_to_string l=
+  match l with
+  |[] ->  ""
+  | (col,score)::tl -> "("^string_of_int col^","^string_of_int score^");" ^ (coef_to_string tl)
+
+
+let eval_coef_col img col =
+   let rec loop i =
+     if i < Array.length img -1 && not(is_column img i col 0) then loop (i+1)
+     else (col,i)
+   in loop 0
+
+let eval_coef_img img =
+   let rec loop j =
+     if j < ((Array.length img.(0))/20) then eval_coef_col img j :: loop (j+1)
+     else []
+   in loop 0
+
+let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (col,score+20*(abs (col - pos)) )) coef_list
+
+
+(****************************************)
+(****************************************)
+
 
 let get_image img = lire_image ("../"^img)
 
@@ -108,7 +135,10 @@ let color_column img obj =
  done
 (*let monImage = get_image "output.png"*)
 
-let run =trig_input Enter;
+
+
+
+(*let run =trig_input Enter;
 	open_graph " 600x440+700-350";
 	wait 100.0;
 	while true do
@@ -121,8 +151,24 @@ let run =trig_input Enter;
 	 dessiner_image monImage;
 	 trig_x_input (choose_direction pos obj) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
 	 
+	done*)
+let run =trig_input Enter;
+	open_graph " 600x440+700-350";
+	wait 100.0;
+	while true do
+	 trig_input Capture;
+	 let monImage = get_image "img_queue" in
+	 traitement monImage;
+	let pos = (position_joueur monImage) in
+	 let obj = (best_pos monImage 0 0 false (-1)) in
+	let coef = (update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)) in
+	 Sys.command ("clear");
+	 Printf.printf "%s\n\n%!" (coef_to_string coef);
+	 color_column monImage obj;
+	 dessiner_image monImage;
+	 trig_x_input (choose_direction pos obj) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
+	 
 	done
-
 
 
 let () = run
