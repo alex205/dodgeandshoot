@@ -12,6 +12,12 @@ open Unix;;
    White = 16777215 
    purple = 12328318 *)
 
+let white =16777215
+let red =16711680
+let black = 0
+let purple = 12328318
+
+
 let aff tab =
   for row = 0 to Array.length tab - 1 do
    let line = tab.(row) in
@@ -115,9 +121,29 @@ let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (co
 let rec update_right_side pos memo l =
   match l with
   |[]->[]
-  |(col,score)::tl -> if (score >= 420 || memo >= 420) && col >pos then (col,1000):: update_right_side pos 1000 tl
+  |(col,score)::tl -> if (score >= 350 || memo >= 350) && col >pos then (col,1000):: update_right_side pos 1000 tl
 		      else (col,score):: update_right_side pos 0 tl
 
+let rec update_left_side pos memo l =
+  match l with
+  |[]->[]
+  |(col,score)::tl -> if (score >= 350 || memo >= 350) && col < pos then (col,1000):: update_left_side pos 1000 tl
+		      else (col,score):: update_left_side pos 0 tl
+
+
+let compare_tuple t1 t2 =
+  match t1,t2 with
+  |(_,s1),(_,s2)-> compare s1 s2
+
+let choose_column coef_list_sorted =
+   match coef_list_sorted with
+   |(col,_)::tl-> col
+   |_-> -1
+
+let bomb coef_list_sorted pos =
+ match coef_list_sorted with
+ |(_,score)::tl-> if score > 300 then  trig_input Bomb
+ |_-> ()
 
 (****************************************)
 (****************************************)
@@ -130,20 +156,30 @@ let wait milli =
   let tm1 = Unix.gettimeofday () in
   while Unix.gettimeofday () -. tm1 < sec do () done
 
-let color_column img obj =
-  for j = obj to (obj+19) do
-   for i = 0 to 20 do
-    img.(i).(j)<-(rgb 0 255 0)
-  done;
- done;
- for j = 0 to Array.length img.(0)-1 do
-  img.(Array.length img - 60).(j)<-(rgb 128 255 255)
- done
+let color_column_j img tuple =
+ match tuple with
+ |(col,score) -> 
+  for j = (col*20) to (col*20)+19 do
+   for i=0 to 30 do
+     if score <350 && score != (-1) then img.(i).(j) <- (rgb 0 255 0) else if score=(-1) then img.(i).(j) <- (rgb 128 255 255) else img.(i).(j) <- (rgb 255 0 0)
+   done;
+  done
+
+
+let rec color_column img coef_list =
+ match coef_list with
+ |[] -> ()
+ |(col,score)::tl -> color_column_j img (col,score); color_column img tl
+  
+let color_chosen img sorted =
+ match sorted with
+ |[]->()
+ |(col,score)::tl-> color_column_j img (col,-1)
 (*let monImage = get_image "output.png"*)
 
 
 
-
+(* IA1 *)
 (*let run =trig_input Enter;
 	open_graph " 600x440+700-350";
 	wait 100.0;
@@ -158,6 +194,8 @@ let color_column img obj =
 	 trig_x_input (choose_direction pos obj) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
 	 
 	done*)
+
+(* IA2 *)
 let run =trig_input Enter;
 	open_graph " 600x440+700-350";
 	wait 100.0;
@@ -165,15 +203,17 @@ let run =trig_input Enter;
 	 trig_input Capture;
 	 let monImage = get_image "img_queue" in
 	 traitement monImage;
-	let pos = (position_joueur monImage) in
+	 let pos = (position_joueur monImage) in
 	 let obj = (best_pos monImage 0 0 false (-1)) in
-	let coef = List . rev (update_right_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
+	 let coef = List.rev (update_left_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
+	 let sorted = List.sort compare_tuple coef in
 	 Sys.command ("clear");
 	 Printf.printf "%s\n\n%!" (coef_to_string coef);
-	 color_column monImage obj;
+         color_column monImage sorted;
+         color_chosen monImage sorted;
 	 dessiner_image monImage;
-	 trig_x_input (choose_direction pos obj) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
-	 
+         bomb sorted (pos/20);
+	 trig_x_input (choose_direction (pos/20) (choose_column sorted)) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
 	done
 
 
