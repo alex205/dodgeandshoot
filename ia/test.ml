@@ -16,7 +16,8 @@ let white =16777215
 let red =16711680
 let black = 0
 let purple = 12328318
-
+let permissive = 350
+let bomb_permissive = 325
 
 let aff tab =
   for row = 0 to Array.length tab - 1 do
@@ -116,18 +117,18 @@ let eval_coef_img img =
      else []
    in loop 0
 
-let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (col,score+20*(abs (col - pos)) )) coef_list
+let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (col,score+30*(abs (col - pos)) )) coef_list
 
 let rec update_right_side pos memo l =
   match l with
   |[]->[]
-  |(col,score)::tl -> if (score >= 350 || memo >= 350) && col >pos then (col,1000):: update_right_side pos 1000 tl
+  |(col,score)::tl -> if (score >= permissive || memo >= permissive) && col >pos then (col,1000):: update_right_side pos 1000 tl
 		      else (col,score):: update_right_side pos 0 tl
 
 let rec update_left_side pos memo l =
   match l with
   |[]->[]
-  |(col,score)::tl -> if (score >= 350 || memo >= 350) && col < pos then (col,1000):: update_left_side pos 1000 tl
+  |(col,score)::tl -> if (score >= permissive || memo >= permissive) && col < pos then (col,1000):: update_left_side pos 1000 tl
 		      else (col,score):: update_left_side pos 0 tl
 
 
@@ -142,7 +143,7 @@ let choose_column coef_list_sorted =
 
 let bomb coef_list_sorted pos =
  match coef_list_sorted with
- |(_,score)::tl-> if score > 300 then  trig_input Bomb
+ |(_,score)::tl-> if score > bomb_permissive then  trig_input Bomb
  |_-> ()
 
 (****************************************)
@@ -204,16 +205,17 @@ let run =trig_input Enter;
 	 let monImage = get_image "img_queue" in
 	 traitement monImage;
 	 let pos = (position_joueur monImage) in
-	 let obj = (best_pos monImage 0 0 false (-1)) in
 	 let coef = List.rev (update_left_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
 	 let sorted = List.sort compare_tuple coef in
+	 let obj = choose_column sorted in
 	 Sys.command ("clear");
 	 Printf.printf "%s\n\n%!" (coef_to_string coef);
+  	 Printf.printf "objectif : %d\n%!" obj;
          color_column monImage sorted;
          color_chosen monImage sorted;
 	 dessiner_image monImage;
          bomb sorted (pos/20);
-	 trig_x_input (choose_direction (pos/20) (choose_column sorted)) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
+	 trig_x_input (choose_direction (pos/20) (obj)) (if (abs (obj-pos/20)) >= 3 then 3 else (abs (obj-pos/20)));
 	done
 
 
