@@ -112,6 +112,12 @@ let eval_coef_img img =
 
 let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (col,score+20*(abs (col - pos)) )) coef_list
 
+let rec update_right_side pos memo l =
+  match l with
+  |[]->[]
+  |(col,score)::tl -> if (score >= 420 || memo >= 420) && col >pos then (col,1000):: update_right_side pos 1000 tl
+		      else (col,score):: update_right_side pos 0 tl
+
 
 (****************************************)
 (****************************************)
@@ -161,7 +167,7 @@ let run =trig_input Enter;
 	 traitement monImage;
 	let pos = (position_joueur monImage) in
 	 let obj = (best_pos monImage 0 0 false (-1)) in
-	let coef = (update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)) in
+	let coef = List . rev (update_right_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
 	 Sys.command ("clear");
 	 Printf.printf "%s\n\n%!" (coef_to_string coef);
 	 color_column monImage obj;
