@@ -11,6 +11,8 @@ open Unix;;
    Black = 0
    White = 16777215 
    purple = 12328318 *)
+type black_list_t = {mutable bl : bool list}
+
 
 let white =16777215
 let red =16711680
@@ -18,6 +20,13 @@ let black = 0
 let purple = 12328318
 let permissive = 350
 let bomb_permissive = 325
+
+let rec make_black_list n acu =
+  if n = 0 then acu
+  else make_black_list (n-1) (false::acu)
+
+let black_list ={bl=make_black_list 10 []}
+
 
 let aff tab =
   for row = 0 to Array.length tab - 1 do
@@ -35,7 +44,6 @@ let clone_matrix m =
 
 
 let traitement tab =
-let white = 16777215 in
  for j = 0 to (Array.length tab.(0)) - 1 do
     for i = 0 to (Array.length tab -1) do
 	let comp_i =(Array.length tab -1) -i in
@@ -54,8 +62,6 @@ let rec is_column img i j px =
 (*Printf.printf "%d\n%!" (position_joueur img)*)
 let position_joueur img =
   let i_max = Array.length img -4 in
-  let red = 16711680 in
-  let purple = 12328318 in
   let rec loop j =
     if j < Array.length img.(0) then
       if img.(i_max).(j) = red || img.(i_max).(j) = purple then j else loop (j+1)
@@ -69,10 +75,10 @@ let rec reachable img pos j obj =
  else
   if (obj-pos) <0 then
      if j <= obj then true
-     else if img.(Array.length img - 60).(j) != 16777215  then reachable img pos (j-1) obj else false
+     else if img.(Array.length img - 60).(j) != white  then reachable img pos (j-1) obj else false
   else
      if j >= obj then true
-     else if img.(Array.length img - 60).(j) != 16777215 || (j-pos)<21 then reachable img pos (j+1) obj else false
+     else if img.(Array.length img - 60).(j) != white || (j-pos)<21 then reachable img pos (j+1) obj else false
 
 
 let choose_direction pos obj =
@@ -134,7 +140,7 @@ let rec update_left_side pos memo l =
 
 let compare_tuple t1 t2 =
   match t1,t2 with
-  |(_,s1),(_,s2)-> compare s1 s2
+  |(c1,s1),(c2,s2)-> if s1!=s2 then compare s1 s2 else compare (abs (c1-14)) (abs (c2-14))
 
 let choose_column coef_list_sorted =
    match coef_list_sorted with
@@ -146,6 +152,24 @@ let bomb coef_list_sorted pos =
  |(_,score)::tl-> if score > bomb_permissive then  trig_input Bomb
  |_-> ()
 
+let update_black_list img bl =
+  match bl with
+  |[] -> failwith "Empty black list Oh my god !"
+  |a :: tl -> 
+     let rec loop img j acu =
+      if j = Array.length img then acu 
+      else loop img (j+1) (acu && img.(0).(j)=black)
+     in List.rev((loop img 0 true):: List.rev tl)
+
+let rec detect_end bl acu =
+ match bl with
+ | [] -> acu
+ | hd::tl -> detect_end tl (acu && hd)
+       
+let rec string_of_list bl =
+  match bl with
+  |[]-> ""
+  |hd::tl -> string_of_bool hd ^ " "^string_of_list tl
 (****************************************)
 (****************************************)
 
@@ -204,13 +228,16 @@ let run =trig_input Enter;
 	 trig_input Capture;
 	 let monImage = get_image "img_queue" in
 	 traitement monImage;
+	 black_list.bl <- update_black_list monImage black_list.bl;
 	 let pos = (position_joueur monImage) in
 	 let coef = List.rev (update_left_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
 	 let sorted = List.sort compare_tuple coef in
 	 let obj = choose_column sorted in
-	 Sys.command ("clear");
+	 ignore(Sys.command ("clear"));
+	(if (detect_end black_list.bl true) then Printf.printf "MDR LOL TA PERDU\n%!");
 	 Printf.printf "%s\n\n%!" (coef_to_string coef);
   	 Printf.printf "objectif : %d\n%!" obj;
+	Printf.printf "%s\n\n%!" (string_of_list black_list.bl);
          color_column monImage sorted;
          color_chosen monImage sorted;
 	 dessiner_image monImage;
