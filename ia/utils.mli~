@@ -1,8 +1,16 @@
 
+
+(*
+Permet d'afficher un tableau de Graphics.color array array
+*)
 val aff: Graphics.color array array -> unit
 
-val position_joueur: Graphics.color array array -> int
-
+(*
+Permet d'attendr ele nombre indiqué de ms
+*)
 val wait: float -> unit
 
+(*
+Traduis une liste de booléens en string
+*)
 val string_of_list: bool list -> string
