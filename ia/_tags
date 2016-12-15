@@ -1,1 +1,1 @@
-<*.ml> or "test.native": pkg_graphics, pkg_unix
+<*.ml> or "main.native": pkg_graphics, pkg_unix
