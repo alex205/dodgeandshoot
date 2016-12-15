@@ -9,7 +9,7 @@ let trig_input inp =
   | Right -> ignore(Sys.command(command ^ "Right"))
   | Enter -> ignore(Sys.command(command ^ "KP_Enter"))
   | Bomb -> ignore(Sys.command(command ^ "Up"))
-  | Capture -> ignore(Sys.command(command ^ "Down"))
+  | Capture -> ignore(Sys.command(command ^ "P"))
   | Nothing -> ()
 ;;
 
