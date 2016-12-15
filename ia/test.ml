@@ -1,185 +1,17 @@
-
 open Images;;
 open Graphics;;
 open Array;;
 open Game_input;;
 open Unix;;
-
-(* ocamlc graphics.cma images.cmo test.ml -o test *)
-(*mogrify -crop 597x436+40+41 output.png*)
-(* R = 16711680
-   Black = 0
-   White = 16777215 
-   purple = 12328318 *)
-type black_list_t = {mutable bl : bool list}
+open Ia1;;
+open Ia2;;
+open Utils;;
+open Black;;
 
 
-let white =16777215
-let red =16711680
-let black = 0
-let purple = 12328318
-let permissive = 350
-let bomb_permissive = 325
-
-let rec make_black_list n acu =
-  if n = 0 then acu
-  else make_black_list (n-1) (false::acu)
-
-let black_list ={bl=make_black_list 10 []}
-
-
-let aff tab =
-  for row = 0 to Array.length tab - 1 do
-   let line = tab.(row) in
-    for col = 0 to Array.length line - 1 do
-     Printf.printf "%d%!  " line.(col)
-    done;
-    Printf.printf "\n%!"
-   done
-
-let clone_matrix m =
-  let cloned = Array.copy m in
-  Array.iteri (fun i line -> cloned.(i) <- Array.copy line) cloned ;
-  cloned
-
-
-let traitement tab =
- for j = 0 to (Array.length tab.(0)) - 1 do
-    for i = 0 to (Array.length tab -1) do
-	let comp_i =(Array.length tab -1) -i in
-	if comp_i != Array.length tab -1 then
-		if tab.(comp_i).(j) < white && tab.(comp_i+1).(j) = white then tab.(comp_i).(j)<-(rgb 255 255 255)
-    done;
-   done
-
-
-(*Printf.printf "%s%!" (string_of_bool (is_column img 0 0 0))*)
-
-let rec is_column img i j px =
- if px >= 19 then true
-   else img.(i).(j*20 + px) = 0 && is_column img i j (px+1)
-
-(*Printf.printf "%d\n%!" (position_joueur img)*)
-let position_joueur img =
-  let i_max = Array.length img -4 in
-  let rec loop j =
-    if j < Array.length img.(0) then
-      if img.(i_max).(j) = red || img.(i_max).(j) = purple then j else loop (j+1)
-    else -1
-  in loop 0
-
-(**********************************************)
-
-let rec reachable img pos j obj =
- if pos = obj then true
- else
-  if (obj-pos) <0 then
-     if j <= obj then true
-     else if img.(Array.length img - 60).(j) != white  then reachable img pos (j-1) obj else false
-  else
-     if j >= obj then true
-     else if img.(Array.length img - 60).(j) != white || (j-pos)<21 then reachable img pos (j+1) obj else false
-
-
-let choose_direction pos obj =
- let diff = obj-pos in
-  if diff <0 then Left
-   else if diff > 0 then Right
-    else Nothing
-
-
-let rec best_pos img i j found res=
- if not found  then
-  if i < Array.length img then
-    if j < 20  then
-      if is_column img i j 0 && (reachable img (position_joueur img) (position_joueur img) (j*20)) then best_pos img i (j+1) true (j*20)
-      else best_pos img i (j+1) false (-1)
-    else best_pos img (i+1) 0 true (j*20)
-  else res
- else res
-
-(**********************************************)
-
-
-
-(****************************************)
-(****************************************)
-
-let rec coef_to_string l=
-  match l with
-  |[] ->  ""
-  | (col,score)::tl -> "("^string_of_int col^","^string_of_int score^");" ^ (coef_to_string tl)
-
-
-let eval_coef_col img col =
-   let rec loop i =
-     if i < Array.length img -1 && not(is_column img i col 0) then loop (i+1)
-     else (col,i)
-   in loop 0
-
-let eval_coef_img img =
-   let rec loop j =
-     if j < ((Array.length img.(0))/20) then eval_coef_col img j :: loop (j+1)
-     else []
-   in loop 0
-
-let update_coef_by_distance img pos coef_list = List.map (fun (col,score) -> (col,score+30*(abs (col - pos)) )) coef_list
-
-let rec update_right_side pos memo l =
-  match l with
-  |[]->[]
-  |(col,score)::tl -> if (score >= permissive || memo >= permissive) && col >pos then (col,1000):: update_right_side pos 1000 tl
-		      else (col,score):: update_right_side pos 0 tl
-
-let rec update_left_side pos memo l =
-  match l with
-  |[]->[]
-  |(col,score)::tl -> if (score >= permissive || memo >= permissive) && col < pos then (col,1000):: update_left_side pos 1000 tl
-		      else (col,score):: update_left_side pos 0 tl
-
-
-let compare_tuple t1 t2 =
-  match t1,t2 with
-  |(c1,s1),(c2,s2)-> if s1!=s2 then compare s1 s2 else compare (abs (c1-14)) (abs (c2-14))
-
-let choose_column coef_list_sorted =
-   match coef_list_sorted with
-   |(col,_)::tl-> col
-   |_-> -1
-
-let bomb coef_list_sorted pos =
- match coef_list_sorted with
- |(_,score)::tl-> if score > bomb_permissive then  trig_input Bomb
- |_-> ()
-
-let update_black_list img bl =
-  match bl with
-  |[] -> failwith "Empty black list Oh my god !"
-  |a :: tl -> 
-     let rec loop img j acu =
-      if j = Array.length img then acu 
-      else loop img (j+1) (acu && img.(0).(j)=black)
-     in List.rev((loop img 0 true):: List.rev tl)
-
-let rec detect_end bl acu =
- match bl with
- | [] -> acu
- | hd::tl -> detect_end tl (acu && hd)
-       
-let rec string_of_list bl =
-  match bl with
-  |[]-> ""
-  |hd::tl -> string_of_bool hd ^ " "^string_of_list tl
-(****************************************)
-(****************************************)
-
+let black_list ={bl=make_black_list 6 []}
 
 let get_image img = lire_image ("../"^img)
-
-let wait milli =
-  let sec = milli /. 1000. in
-  let tm1 = Unix.gettimeofday () in
-  while Unix.gettimeofday () -. tm1 < sec do () done
 
 let color_column_j img tuple =
  match tuple with
@@ -200,11 +32,47 @@ let color_chosen img sorted =
  match sorted with
  |[]->()
  |(col,score)::tl-> color_column_j img (col,-1)
-(*let monImage = get_image "output.png"*)
 
 
 
-(* IA1 *)
+
+(* IA2 *)
+let run =trig_input Enter;
+	open_graph " 600x440+700-350";
+	wait 100.0;
+	while not (detect_end black_list.bl true) do
+	 trig_input Capture;
+	 let monImage = get_image "img_queue" in
+	 traitement monImage;
+	 black_list.bl <- update_black_list monImage black_list.bl;
+	 let pos = (position_joueur monImage) in
+	 let coef = List.rev (update_left_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
+	 let sorted = List.sort compare_tuple coef in
+	 let obj = choose_column sorted in
+	 ignore(Sys.command ("clear"));
+	 Printf.printf "%s\n\n%!" (coef_to_string coef);
+  	 Printf.printf "Colonne objectif (en bleu clair sur le graph Ocaml) : %d\n%!" obj;
+         color_column monImage sorted;
+         color_chosen monImage sorted;
+	 dessiner_image monImage;
+         bomb sorted (pos/20);
+	 trig_x_input (choose_direction (pos/20) (obj)) (if (abs (obj-pos/20)) >= 3 then 3 else (abs (obj-pos/20)));
+	done;
+	ignore(Sys.command ("clear"));
+	Printf.printf "Et c'est perdu !\nNos développeurs mentalistes pensent que la partie a été très courte, ou qu'une personne mal intentionnée y a mis fin !\n"; 
+	Printf.printf "Ce n'est pas gentil, vous n'aimeriez pas que l'on vous empêche de vous amuser ainsi !\n";
+	Printf.printf "Cela dit, merci d'avoir essayé notre IA ! Si ce n'est pas déjà fait, vous pouvez essayer de l'affronter dans un mode prévu à cet effet !\n";
+	Printf.printf "Pensez à laisser un pouce bleu et à vous abonner !\n\n\n\n%!"
+
+
+	
+
+let () = run
+
+
+
+
+(* IA1 : cette version du code est présente pour des raisons historiques *)
 (*let run =trig_input Enter;
 	open_graph " 600x440+700-350";
 	wait 100.0;
@@ -218,72 +86,4 @@ let color_chosen img sorted =
 	 dessiner_image monImage;
 	 trig_x_input (choose_direction pos obj) (if (abs (obj-pos))/20 >= 3 then 3 else (abs (obj-pos))/20);
 	 
-	done*)
-
-(* IA2 *)
-let run =trig_input Enter;
-	open_graph " 600x440+700-350";
-	wait 100.0;
-	while true do
-	 trig_input Capture;
-	 let monImage = get_image "img_queue" in
-	 traitement monImage;
-	 black_list.bl <- update_black_list monImage black_list.bl;
-	 let pos = (position_joueur monImage) in
-	 let coef = List.rev (update_left_side (pos/20) 0 (List.rev (update_right_side (pos/20) 0 ((update_coef_by_distance monImage (pos/20) (eval_coef_img monImage)))))) in
-	 let sorted = List.sort compare_tuple coef in
-	 let obj = choose_column sorted in
-	 ignore(Sys.command ("clear"));
-	(if (detect_end black_list.bl true) then Printf.printf "MDR LOL TA PERDU\n%!");
-	 Printf.printf "%s\n\n%!" (coef_to_string coef);
-  	 Printf.printf "objectif : %d\n%!" obj;
-	Printf.printf "%s\n\n%!" (string_of_list black_list.bl);
-         color_column monImage sorted;
-         color_chosen monImage sorted;
-	 dessiner_image monImage;
-         bomb sorted (pos/20);
-	 trig_x_input (choose_direction (pos/20) (obj)) (if (abs (obj-pos/20)) >= 3 then 3 else (abs (obj-pos/20)));
-	done
-
-
-let () = run
-
-
-
-
-(*let run =open_graph " 600x400+1200-50";wait 100.0;
-	while true do
-	 trig_input Capture;
-	 wait 80.0;
-	 let monImage = get_image "output.png" in
-	 traitement monImage;
-	 dessiner_image monImage;
-	 trig_input (choose_direction (position_joueur monImage) (best_pos monImage 0 0 false (-1)));
-	 ignore(Sys.command ("rm image/output.png"));
-	done*)
-
-
-
-(*Printf.printf "%d\n%!" (best_pos img 0 0 false (-1))*)
-
-(*let rec best_pos img i j found res=
- if not found  then
-  if i < Array.length img then
-    if j < 30 then
-      if is_column img i j 0 then best_pos img i (j+1) true (j*20)
-      else best_pos img i (j+1) false (-1)
-    else best_pos img (i+1) 0 true (j*20)
-  else res
- else res *)
-
-
-
-
-(*if obj-pos >=0 then (obj-pos)/20 else (pos-obj)/20*)
-(*let run = open_graph " 600x400+1200-50";wait 100.0;
-	while true do
- 	 let monImage = get_image "output.png" in
-	 traitement monImage;
-	 dessiner_image monImage;
-	 Printf.printf "%d\n%!" (best_pos monImage 0 0 false (-1));
 	done*)

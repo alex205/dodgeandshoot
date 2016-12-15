@@ -182,6 +182,8 @@ function Create_Image(src,name){
 
 
 //variables globales importantes
+var ignore_input=0;
+
 var nb_boules = 25;
 var playing =0;
  var menupresentation=1;
@@ -546,37 +548,43 @@ function Jeu(){
 		switch(e.keyCode) {
 		case 39:
 			//fleche droite J1
-            if(menuplay==1){
-                if(selectplay%3==0){
-                    selectplayers++;
-                }else if(selectplay%3==1){
-                    selectdifficulty++;
-                }
-            }else{
-                if(posX1<580 && playing ==1){
-                    posX1 = posX1 + 20;
-                    DrawAll(nbjoueurs);
-                }
-            }
+		if(!ignore_input){
+		   if(menuplay==1){
+		        if(selectplay%3==0){
+		            selectplayers++;
+		        }else if(selectplay%3==1){
+		            selectdifficulty++;
+		        }
+		   }else{
+		        if(posX1<580 && playing ==1){
+		            posX1 = posX1 + 20;
+		            DrawAll(nbjoueurs);
+		        }
+		    }
+		}
+            
 			break;
-		case 37:
-			//fleche gauche J1
-            if(menuplay==1){
-                if(selectplay%3==0){
-                    selectplayers++;
-                }else if(selectplay%3==1){
-                    if(selectdifficulty!=0){
-                        selectdifficulty--;
-                    } else{
-                        selectdifficulty=4;
-                    }
-                }
-            }else{
-                if(posX1>0 && playing ==1){
-                posX1 = posX1-20;
-                    DrawAll(nbjoueurs);
-                }
-            }
+
+		case 37://fleche gauche J1
+		if(!ignore_input){
+		if(menuplay==1){
+		     if(selectplay%3==0){
+		            selectplayers++;
+		        }else if(selectplay%3==1){
+		            if(selectdifficulty!=0){
+		                selectdifficulty--;
+		            } else{
+		                selectdifficulty=4;
+		            }
+		        }
+		    }else{
+		        if(posX1>0 && playing ==1){
+		        posX1 = posX1-20;
+		            DrawAll(nbjoueurs);
+		        }
+		    }
+		}	
+            
 			break;
 
 		case 68:
@@ -628,7 +636,7 @@ function Jeu(){
 			break;
         case 40:
 	//to_image();
-          jscaml.export_canvas();
+          
 			//fleche bas
             if(menuselect==1){
                 select=select+1;
@@ -727,9 +735,11 @@ function Jeu(){
           case 77:
                 Mute(e);
                 break;
-
-		default:
-		}
+	  case 80 : //touche P pour capturer li'mage pour l'IA Ocaml
+		jscaml.export_canvas();
+		break;
+	default: break;
+	}
 	}
 	function up(e){
 		posX1 = posX1;
@@ -767,9 +777,13 @@ function DistancePlayer2ToBall(j){
 
 	//Fonction qui vérifie si la partie est terminée
  	function Perdu(){
-		if(loose==1){
-            for(var i =0; i<1000000000;i++){}
-            audio.pause();
+	if(loose==1){
+	    ignore_input=1;
+		//for(var i =0; i<1000000000;i++){}
+	    ctx.clearRect(-1,-1,monCanvas.width+200,monCanvas.height+200);
+	    setTimeout(function(){
+		ignore_input=0;
+	    audio.pause();
             audio.currentTime=0;
             playing =0;
             menuperdu=1;
@@ -790,7 +804,11 @@ function DistancePlayer2ToBall(j){
                 });*/
                 Presence_boule[i]=0;
 			}
-		}
+		
+	 	 }, 700);
+            
+	    }
+            
 	}
 
  //FONCTION POUR RECOMMENCER A JOUER
