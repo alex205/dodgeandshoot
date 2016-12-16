@@ -6,7 +6,7 @@ You will need these following packets installed : `nodejs` (with `npm`), `ocaml`
 
 Clone this repository and then execute `./dodge_configure.sh`
 
-##Usage
+## Usage
 To start the server run `./dodge_start.sh`
 
 Open a browser and go to http://localhost:3000
@@ -19,12 +19,17 @@ Don't press any key unless you want to stop the program and don't change the win
 
 To kill the AI, you can use arrow keys to collide a ball. Or, change the window focus.
 
-###Multiplayer
+### Multiplayer
 You can play against the AI in the two players mode. You are the blue square, use Q and D to move.
 
 In this mode bombs aren't allowed, so you have a chance to win !
 
-*Good luck ! Enjoy this wonderful game *
+## Known bugs
+The progressive mode can't be played because it's on developpment so the display is bugged.
+
+Impossible mode can't be played with the regular AI because there are some parameters to adjust to be fit with the new ball's speed.
+
+*Good luck ! Enjoy this wonderful game
 
 
 
