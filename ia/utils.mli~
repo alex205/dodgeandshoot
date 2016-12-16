@@ -1,8 +1,0 @@
-
-val aff: Graphics.color array array -> unit
-
-val position_joueur: Graphics.color array array -> int
-
-val wait: float -> unit
-
-val string_of_list: bool list -> string
