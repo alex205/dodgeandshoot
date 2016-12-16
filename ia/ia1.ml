@@ -1,4 +1,5 @@
 open Graphics;;
+open Images;;
 
 let white =16777215
 let red =16711680

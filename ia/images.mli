@@ -23,6 +23,8 @@
 
 (** {2 Lecture et ecriture d'images dans des fichiers} *)
 
+type image = Graphics.color array array
+
 (**
    [liste_formats] = liste des formats autorises.
 *)

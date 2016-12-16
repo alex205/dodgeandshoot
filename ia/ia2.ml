@@ -1,6 +1,7 @@
 open Graphics;;
 open Utils;;
 open Game_input;;
+open Images;;
 
 let white =16777215
 let red =16711680
@@ -8,6 +9,8 @@ let black = 0
 let purple = 12328318
 let permissive = 350
 let bomb_permissive = 325
+
+type col_coef_t = (int*int)
 
 let traitement tab =
  for j = 0 to (Array.length tab.(0)) - 1 do

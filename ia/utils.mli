@@ -6,7 +6,7 @@ Permet d'afficher un tableau de Graphics.color array array
 val aff: Graphics.color array array -> unit
 
 (*
-Permet d'attendr ele nombre indiqué de ms
+Permet d'attendre le nombre indiqué de ms
 *)
 val wait: float -> unit
 

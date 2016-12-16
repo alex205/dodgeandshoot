@@ -8,10 +8,10 @@ Du code en commun est présent entre les deux versions des IAs. Nous ne considé
 *)
 
 
-val is_column: Graphics.color array array -> int -> int -> int -> bool
+val is_column: Images.image -> int -> int -> int -> bool
 
-val position_joueur: Graphics.color array array -> int
+val position_joueur: Images.image -> int
 
-val reachable: Graphics.color array array ->  int -> int -> int -> bool
+val reachable: Images.image ->  int -> int -> int -> bool
 
-val best_pos: Graphics.color array array -> int -> int -> bool -> int -> int
+val best_pos: Images.image -> int -> int -> bool -> int -> int

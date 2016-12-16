@@ -8,6 +8,8 @@
 *)
 
 
+type image = Graphics.color array array
+
 
 let suffixe_tmp = ".tmp "
 and rm =
