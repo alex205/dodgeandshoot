@@ -1,6 +1,8 @@
 # dodgeandshoot
 Dodge and Shoot game initially created by Toon and Ratedbullet enhanced with an AI
 
+Authors : Guilhem Cichocki "Toon" // Alexis Girardi "alex205"
+
 ## Installation
 You will need these following packets installed : `nodejs` (with `npm`), `ocaml` (with `ocamlbuild`), `imagemagick` and `xdotool`.
 
@@ -29,7 +31,10 @@ The progressive mode can't be played because it's on developpment so the display
 
 Impossible mode can't be played with the regular AI because there are some parameters to adjust to be fit with the new ball's speed.
 
-*Good luck ! Enjoy this wonderful game
+## Issues
+Because this game has a lot of randomness (ball size, speed, position, ...), at the beginning 
+
+Good luck ! Enjoy this wonderful game.
 
 
 
