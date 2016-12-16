@@ -2,5 +2,5 @@
 
 cd ia
 echo "Building the OCaml AI"
-ocamlbuild test.native
+ocamlbuild main.native
 cd ..
